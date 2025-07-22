@@ -7,6 +7,7 @@ import { MusinsaProductItem } from "@/entities/product/types";
 import { useQueryParams } from "@/shared/lib/useQueryParams";
 import { useBattleState } from "./useBattleState";
 import { ErrorBoundary } from "@/shared/lib/ErrorBoundary";
+import { useRouter } from "next/navigation";
 
 const DEFAULT_IMAGE = "https://via.placeholder.com/200x200?text=No+Image";
 
@@ -30,11 +31,15 @@ function ProductBattleInner() {
     replace,
   } = useBattleState(data);
 
+  const router = useRouter();
+
   React.useEffect(() => {
     if (battlePool && battlePool.length === 1 && championId) {
-      push({ step: "final", categoryCode, sectionId, winner: championId });
+      router.push(
+        `/champion?categoryCode=${categoryCode}&sectionId=${sectionId}&winner=${championId}`
+      );
     }
-  }, [battlePool, championId, categoryCode, sectionId, push]);
+  }, [battlePool, championId, categoryCode, sectionId, router]);
 
   if (isLoading || !battlePool || !championId || !challengerId) return null;
   if (error) return <div>에러 발생</div>;
@@ -67,41 +72,75 @@ function ProductBattleInner() {
   };
 
   return (
-    <div className="flex flex-col items-center mt-10">
-      <h2 className="text-2xl font-bold mb-6">
-        더 마음에 드는 상품을 선택하세요
-      </h2>
-      <div className="flex gap-8 mt-8">
-        {[champion, challenger].map((item) => (
-          <div key={item.id} className="flex flex-col items-center">
-            <img
-              src={item.image?.url || DEFAULT_IMAGE}
-              alt={item.info?.productName || "상품"}
-              className="w-52 h-52 object-cover rounded-xl border border-gray-200"
-            />
-            <div className="mt-3 font-semibold text-lg">
-              {item.info?.productName || "상품명 없음"}
+    <div className="flex flex-col items-center justify-center min-h-[70vh] w-full">
+      <div className="card w-full max-w-4xl flex flex-col items-center">
+        <h2 className="text-title mb-8 text-center">
+          더 마음에 드는 상품을 선택하세요
+        </h2>
+        <div className="flex flex-row items-center justify-center gap-8 w-full">
+          <div className="flex-1 flex justify-end">
+            <div className="flex flex-col items-center w-64">
+              <img
+                src={champion.image?.url || DEFAULT_IMAGE}
+                alt={champion.info?.productName || "상품"}
+                className="w-52 h-52 object-cover rounded-xl border border-gray-200 mb-4"
+              />
+              <div className="mt-3 font-semibold text-lg text-center">
+                {champion.info?.productName || "상품명 없음"}
+              </div>
+              <div className="text-gray text-sm mb-1">
+                {champion.info?.brandName || "브랜드 없음"}
+              </div>
+              <div className="text-black text-base mb-2">
+                {champion.info?.finalPrice !== undefined
+                  ? champion.info.finalPrice.toLocaleString() + "원"
+                  : "가격 정보 없음"}
+              </div>
+              <button
+                className="btn-black mt-4 w-full text-base"
+                onClick={() => handleSelect(champion.id)}
+                disabled={selected !== null}
+              >
+                선택
+              </button>
             </div>
-            <div className="text-gray-500 text-sm">
-              {item.info?.brandName || "브랜드 없음"}
-            </div>
-            <div className="text-gray-900 text-base">
-              {item.info?.finalPrice !== undefined
-                ? item.info.finalPrice.toLocaleString() + "원"
-                : "가격 정보 없음"}
-            </div>
-            <button
-              className="mt-4 px-6 py-2 rounded-lg bg-gray-900 text-white font-medium shadow hover:bg-gray-800 transition-colors text-base"
-              onClick={() => handleSelect(item.id)}
-              disabled={selected !== null}
-            >
-              선택
-            </button>
           </div>
-        ))}
-      </div>
-      <div className="mt-6 text-gray-500 text-sm">
-        남은 라운드: {battlePool.length} / 20
+          <div className="flex flex-col items-center mx-6">
+            <span className="text-4xl font-extrabold text-gray-400 select-none">
+              VS
+            </span>
+          </div>
+          <div className="flex-1 flex justify-start">
+            <div className="flex flex-col items-center w-64">
+              <img
+                src={challenger.image?.url || DEFAULT_IMAGE}
+                alt={challenger.info?.productName || "상품"}
+                className="w-52 h-52 object-cover rounded-xl border border-gray-200 mb-4"
+              />
+              <div className="mt-3 font-semibold text-lg text-center">
+                {challenger.info?.productName || "상품명 없음"}
+              </div>
+              <div className="text-gray text-sm mb-1">
+                {challenger.info?.brandName || "브랜드 없음"}
+              </div>
+              <div className="text-black text-base mb-2">
+                {challenger.info?.finalPrice !== undefined
+                  ? challenger.info.finalPrice.toLocaleString() + "원"
+                  : "가격 정보 없음"}
+              </div>
+              <button
+                className="btn-outline mt-4 w-full text-base"
+                onClick={() => handleSelect(challenger.id)}
+                disabled={selected !== null}
+              >
+                선택
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className="mt-8 text-gray text-sm">
+          남은 라운드: {battlePool.length} / 20
+        </div>
       </div>
     </div>
   );
