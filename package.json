@@ -5,8 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "export": "next export",
-    "deploy": "touch out/.nojekyll && gh-pages -d out -b main",
+    "deploy": "next build && touch out/.nojekyll && git add -f out/ && git commit -m \"Deploy\" && git subtree push --prefix out origin gh-pages",
     "start": "next start",
     "lint": "next lint",
     "dev:musinsa": "next dev --hostname local.musinsa.com"
