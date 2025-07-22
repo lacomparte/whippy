@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "export": "next export",
-    "deploy": "NODE_ENV=production pnpm build && gh-pages -d out",
+    "deploy": "touch out/.nojekyll && gh-pages -d out -b main",
     "start": "next start",
     "lint": "next lint",
     "dev:musinsa": "next dev --hostname local.musinsa.com"
