@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "export": "next export",
-    "deploy": "pnpm build && pnpm export && gh-pages -d out",
+    "deploy": "pnpm build && gh-pages -d out",
     "start": "next start",
     "lint": "next lint",
     "dev:musinsa": "next dev --hostname local.musinsa.com"
