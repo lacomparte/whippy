@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const apiClient = axios.create({
-  baseURL: "https://api.alp.musinsa.com/api2/hm/web/v5/pans/ranking",
+  baseURL: "https://api.musinsa.com/api2/hm/web/v5/pans/ranking",
   headers: {
     "Content-Type": "application/json",
   },
