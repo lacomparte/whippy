@@ -1,26 +1,26 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { Suspense, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { productsQuery } from "@/entities/product/api";
 import { MusinsaProductItem } from "@/entities/product/types";
+import { useFinalChoiceParams } from "./useFinalChoice";
+import { ErrorBoundary } from "@/shared/lib/ErrorBoundary";
 
 const DEFAULT_IMAGE = "https://via.placeholder.com/200x200?text=No+Image";
 
-export function FinalChoice() {
-  const params = useMemo(() => new URLSearchParams(window.location.search), []);
-  const categoryCode = params.get("categoryCode") || "";
-  const sectionId = params.get("sectionId") || "200";
-  const winner = params.get("winner");
+function FinalChoiceInner() {
+  const { categoryCode, sectionId, winner, redirectIfNoWinner } =
+    useFinalChoiceParams();
   const { data, isLoading, error } = useQuery(
     productsQuery(categoryCode, sectionId)
   );
 
-  if (!winner) {
-    window.location.search = "/";
-    return null;
-  }
+  useEffect(() => {
+    redirectIfNoWinner();
+  }, [winner, redirectIfNoWinner]);
 
+  if (!winner) return null;
   if (isLoading) return <div>로딩 중...</div>;
   if (error) return <div>에러 발생</div>;
 
@@ -53,5 +53,15 @@ export function FinalChoice() {
         구매하러 가기
       </a>
     </div>
+  );
+}
+
+export function FinalChoice() {
+  return (
+    <Suspense fallback={<div>로딩 중...</div>}>
+      <ErrorBoundary fallback={<div>최종 선택 에러 발생</div>}>
+        <FinalChoiceInner />
+      </ErrorBoundary>
+    </Suspense>
   );
 }

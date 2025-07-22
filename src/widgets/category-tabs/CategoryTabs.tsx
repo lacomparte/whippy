@@ -1,20 +1,22 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { categoryTabsQuery } from "@/entities/product/api";
 import { MusinsaCategoryTab } from "@/entities/product/types";
+import { useQueryParams } from "@/shared/lib/useQueryParams";
+import { ErrorBoundary } from "@/shared/lib/ErrorBoundary";
 
 interface DrillState {
   tabs: MusinsaCategoryTab[];
   params: { categoryCode: string; sectionId: string };
 }
 
-export function CategoryTabs() {
+function CategoryTabsInner() {
+  const { get, push } = useQueryParams();
   const { data, isLoading, error } = useQuery(categoryTabsQuery());
   const [drillStack, setDrillStack] = useState<DrillState[]>([]);
 
-  // 최초 진입 시 1depth 세팅
   useEffect(() => {
     if (data?.tabs) {
       setDrillStack([
@@ -35,11 +37,11 @@ export function CategoryTabs() {
       setDrillStack([...drillStack, { tabs: tab.tabs, params: tab.params }]);
     } else {
       // tabs가 비어있으면 상품 배틀로 이동
-      const params = new URLSearchParams(window.location.search);
-      params.set("step", "battle");
-      params.set("categoryCode", tab.params.categoryCode);
-      params.set("sectionId", tab.params.sectionId);
-      window.location.search = params.toString();
+      push({
+        step: "battle",
+        categoryCode: tab.params.categoryCode,
+        sectionId: tab.params.sectionId,
+      });
     }
   };
 
@@ -73,5 +75,15 @@ export function CategoryTabs() {
         ))}
       </div>
     </div>
+  );
+}
+
+export function CategoryTabs() {
+  return (
+    <Suspense fallback={<div>로딩 중...</div>}>
+      <ErrorBoundary fallback={<div>카테고리 에러 발생</div>}>
+        <CategoryTabsInner />
+      </ErrorBoundary>
+    </Suspense>
   );
 }
