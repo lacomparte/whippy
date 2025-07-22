@@ -32,7 +32,7 @@ export interface TabApiResponse {
 // Musinsa 카테고리 API TAB_OUTLINED 타입 정의
 
 export interface MusinsaTabOnClick {
-  eventLog?: any;
+  eventLog?: unknown;
   isHighlighted?: boolean;
 }
 
@@ -64,7 +64,7 @@ export interface MusinsaTabModule {
   tabs: MusinsaCategoryTab[];
   params: MusinsaTabParams;
   text: MusinsaTabText;
-  impressionEventLog?: any;
+  impressionEventLog?: unknown;
   onClick?: MusinsaTabOnClick;
   isHighlighted?: boolean;
 }

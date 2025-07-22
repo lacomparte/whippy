@@ -1,8 +1,11 @@
-import type { NextConfig } from "next";
+/** @type {import('next').NextConfig} */
+const repoName = "whippy";
+const isProd = process.env.NODE_ENV === "production";
 
-const nextConfig: NextConfig = {
-  /* config options here */
-  allowedDevOrigins: ["http://local.musinsa.com:3000"],
+const nextConfig = {
+  output: "export",
+  assetPrefix: isProd ? `/${repoName}/` : undefined,
+  basePath: isProd ? `/${repoName}` : undefined,
 };
 
 export default nextConfig;

@@ -7,6 +7,7 @@ import { MusinsaCategoryTab } from "@/entities/product/types";
 import { useQueryParams } from "@/shared/lib/useQueryParams";
 import { ErrorBoundary } from "@/shared/lib/ErrorBoundary";
 import { useRouter } from "next/navigation";
+import { LoadingSpinner } from "@/shared/lib/LoadingSpinner";
 
 interface DrillState {
   tabs: MusinsaCategoryTab[];
@@ -14,10 +15,9 @@ interface DrillState {
 }
 
 function CategoryTabsInner() {
-  const { get, push } = useQueryParams();
+  const router = useRouter();
   const { data, isLoading, error } = useQuery(categoryTabsQuery());
   const [drillStack, setDrillStack] = useState<DrillState[]>([]);
-  const router = useRouter();
 
   useEffect(() => {
     if (data?.tabs) {
@@ -27,7 +27,7 @@ function CategoryTabsInner() {
     }
   }, [data]);
 
-  if (isLoading) return <div>로딩 중...</div>;
+  if (isLoading) return <LoadingSpinner />;
   if (error) {
     console.error(error);
     return <div>에러 발생</div>;
@@ -52,14 +52,16 @@ function CategoryTabsInner() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[70vh] w-full">
-      <div className="card w-full max-w-2xl flex flex-col items-center">
-        <h2 className="text-title mb-6 text-center">카테고리를 선택하세요</h2>
+    <div className="flex flex-col min-h-[70vh] w-full items-center justify-center">
+      <div className="w-full flex justify-start">
         {drillStack.length > 1 && (
-          <button className="mb-4 btn-outline" onClick={handleBack}>
+          <button className="btn-outline ml-8 mt-8" onClick={handleBack}>
             이전으로
           </button>
         )}
+      </div>
+      <div className="card w-full max-w-2xl flex flex-col items-center mt-2">
+        <h2 className="text-title mb-6 text-center">카테고리를 선택하세요</h2>
         <div className="flex flex-wrap gap-3 justify-center w-full">
           {current?.tabs.length === 0 && <div>카테고리 없음</div>}
           {current?.tabs.map((tab: MusinsaCategoryTab) => (
@@ -79,7 +81,7 @@ function CategoryTabsInner() {
 
 export function CategoryTabs() {
   return (
-    <Suspense fallback={<div>로딩 중...</div>}>
+    <Suspense fallback={<LoadingSpinner />}>
       <ErrorBoundary fallback={<div>카테고리 에러 발생</div>}>
         <CategoryTabsInner />
       </ErrorBoundary>

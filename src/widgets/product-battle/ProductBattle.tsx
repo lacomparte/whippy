@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense } from "react";
+import React, { Suspense, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { productsQuery } from "@/entities/product/api";
 import { MusinsaProductItem } from "@/entities/product/types";
@@ -8,8 +8,29 @@ import { useQueryParams } from "@/shared/lib/useQueryParams";
 import { useBattleState } from "./useBattleState";
 import { ErrorBoundary } from "@/shared/lib/ErrorBoundary";
 import { useRouter } from "next/navigation";
+import { LoadingSpinner } from "@/shared/lib/LoadingSpinner";
 
 const DEFAULT_IMAGE = "https://via.placeholder.com/200x200?text=No+Image";
+
+function BattleImage({ src, alt }: { src: string; alt: string }) {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <div className="w-full max-w-[400px] h-[400px] flex items-center justify-center relative mb-4">
+      {!loaded && (
+        <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-xl" />
+      )}
+      <img
+        src={src}
+        alt={alt}
+        className={`w-full h-full object-cover object-center rounded-xl border border-gray-200 transition-opacity duration-300 ${
+          loaded ? "opacity-100" : "opacity-0"
+        }`}
+        onLoad={() => setLoaded(true)}
+        draggable={false}
+      />
+    </div>
+  );
+}
 
 function ProductBattleInner() {
   const { get } = useQueryParams();
@@ -24,10 +45,7 @@ function ProductBattleInner() {
     challengerId,
     selected,
     setSelected,
-    setBattlePool,
-    setChampionId,
     history,
-    push,
     replace,
   } = useBattleState(data);
 
@@ -41,7 +59,8 @@ function ProductBattleInner() {
     }
   }, [battlePool, championId, categoryCode, sectionId, router]);
 
-  if (isLoading || !battlePool || !championId || !challengerId) return null;
+  if (isLoading) return <LoadingSpinner />;
+  if (!battlePool || !championId || !challengerId) return null;
   if (error) return <div>에러 발생</div>;
   if (championId === challengerId) return <div>선택할 상품이 없습니다.</div>;
 
@@ -62,8 +81,6 @@ function ProductBattleInner() {
     setSelected(winnerId);
     const loserId = winnerId === championId ? challengerId : championId;
     const newPool = battlePool.filter((id) => id !== loserId);
-    setBattlePool(newPool);
-    setChampionId(winnerId);
     replace({
       battlePool: newPool.join(","),
       champion: winnerId,
@@ -80,10 +97,9 @@ function ProductBattleInner() {
         <div className="flex flex-row items-center justify-center gap-8 w-full">
           <div className="flex-1 flex justify-end">
             <div className="flex flex-col items-center w-64">
-              <img
+              <BattleImage
                 src={champion.image?.url || DEFAULT_IMAGE}
                 alt={champion.info?.productName || "상품"}
-                className="w-52 h-52 object-cover rounded-xl border border-gray-200 mb-4"
               />
               <div className="mt-3 font-semibold text-lg text-center">
                 {champion.info?.productName || "상품명 없음"}
@@ -112,10 +128,9 @@ function ProductBattleInner() {
           </div>
           <div className="flex-1 flex justify-start">
             <div className="flex flex-col items-center w-64">
-              <img
+              <BattleImage
                 src={challenger.image?.url || DEFAULT_IMAGE}
                 alt={challenger.info?.productName || "상품"}
-                className="w-52 h-52 object-cover rounded-xl border border-gray-200 mb-4"
               />
               <div className="mt-3 font-semibold text-lg text-center">
                 {challenger.info?.productName || "상품명 없음"}
@@ -148,7 +163,7 @@ function ProductBattleInner() {
 
 export function ProductBattle() {
   return (
-    <Suspense fallback={<div>로딩 중...</div>}>
+    <Suspense fallback={<LoadingSpinner />}>
       <ErrorBoundary fallback={<div>배틀 에러 발생</div>}>
         <ProductBattleInner />
       </ErrorBoundary>

@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "export": "next export",
+    "deploy": "pnpm build && pnpm export && gh-pages -d out",
     "start": "next start",
     "lint": "next lint",
     "dev:musinsa": "next dev --hostname local.musinsa.com"
@@ -27,6 +29,7 @@
     "autoprefixer": "^10.4.21",
     "eslint": "^9",
     "eslint-config-next": "15.4.2",
+    "gh-pages": "^6.3.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.11",
     "typescript": "^5"

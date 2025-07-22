@@ -1,13 +1,34 @@
 "use client";
 
-import React, { Suspense, useEffect } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { productsQuery } from "@/entities/product/api";
 import { MusinsaProductItem } from "@/entities/product/types";
 import { useFinalChoiceParams } from "./useFinalChoice";
 import { ErrorBoundary } from "@/shared/lib/ErrorBoundary";
+import { LoadingSpinner } from "@/shared/lib/LoadingSpinner";
 
 const DEFAULT_IMAGE = "https://via.placeholder.com/200x200?text=No+Image";
+
+function BattleImage({ src, alt }: { src: string; alt: string }) {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <div className="w-full max-w-[400px] h-[400px] flex items-center justify-center relative mb-6">
+      {!loaded && (
+        <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-xl" />
+      )}
+      <img
+        src={src}
+        alt={alt}
+        className={`w-full h-full object-cover object-center rounded-xl border border-gray-200 transition-opacity duration-300 ${
+          loaded ? "opacity-100" : "opacity-0"
+        }`}
+        onLoad={() => setLoaded(true)}
+        draggable={false}
+      />
+    </div>
+  );
+}
 
 function FinalChoiceInner() {
   const { categoryCode, sectionId, winner, redirectIfNoWinner } =
@@ -33,10 +54,9 @@ function FinalChoiceInner() {
     <div className="flex flex-col items-center mt-10">
       <div className="card w-full max-w-xl flex flex-col items-center">
         <h2 className="text-title mb-6">최종 선택한 상품</h2>
-        <img
+        <BattleImage
           src={product.image?.url || DEFAULT_IMAGE}
           alt={product.info.productName}
-          className="w-60 h-60 object-cover rounded-xl border border-gray-200 mb-6"
         />
         <div className="font-semibold text-xl mb-2">
           {product.info.productName}
@@ -53,6 +73,15 @@ function FinalChoiceInner() {
         >
           구매하러 가기
         </a>
+        <button
+          className="btn-outline text-lg w-full text-center mt-4"
+          onClick={() => {
+            // 카테고리 선택(첫 화면)으로 이동
+            window.location.href = "/choice";
+          }}
+        >
+          다시 선택하기
+        </button>
       </div>
     </div>
   );
@@ -60,7 +89,7 @@ function FinalChoiceInner() {
 
 export function FinalChoice() {
   return (
-    <Suspense fallback={<div>로딩 중...</div>}>
+    <Suspense fallback={<LoadingSpinner />}>
       <ErrorBoundary fallback={<div>최종 선택 에러 발생</div>}>
         <FinalChoiceInner />
       </ErrorBoundary>

@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import { ReactQueryProvider } from "@/shared/api/queryClient";
 
 export const metadata: Metadata = {
-  title: "무신사 신상품 이상형 월드컵",
-  description: "신상품 월드컵",
+  title: "무신사 상품 이상형 월드컵",
+  description: "상품 월드컵",
 };
 
 export default function RootLayout({
