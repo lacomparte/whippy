@@ -2,13 +2,16 @@
   "name": "whippy",
   "version": "0.1.0",
   "private": true,
+  "description": "무신사 신상품 이상형 월드컵! Next.js, React, Tanstack Query 기반 프로젝트.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "deploy": "next build && touch out/.nojekyll && git add -f out/ && git commit -m \"Deploy\" && git subtree push --prefix out origin gh-pages",
     "start": "next start",
     "lint": "next lint",
-    "dev:musinsa": "next dev --hostname local.musinsa.com"
+    "dev:musinsa": "next dev --hostname local.musinsa.com",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.83.0",
@@ -21,17 +24,49 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4.1.11",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/axios": "^0.14.4",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.21",
+    "axios-mock-adapter": "^2.1.0",
     "eslint": "^9",
     "eslint-config-next": "15.4.2",
     "gh-pages": "^6.3.0",
+    "jest": "^30.0.5",
+    "jest-environment-jsdom": "^30.0.5",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.11",
+    "ts-jest": "^29.4.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   },
-  "packageManager": "pnpm@10.12.4+sha512.5ea8b0deed94ed68691c9bad4c955492705c5eeb8a87ef86bc62c74a26b037b08ff9570f108b2e4dbd1dd1a9186fea925e527f141c648e85af45631074680184"
+  "packageManager": "pnpm@10.12.4",
+  "engines": {
+    "node": ">=22.14.0",
+    "pnpm": ">=10.12.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lacomparte/whippy.git"
+  },
+  "author": "lacomparte",
+  "license": "MIT",
+  "homepage": "https://lacomparte.github.io/whippy/",
+  "bugs": {
+    "url": "https://github.com/lacomparte/whippy/issues"
+  },
+  "keywords": [
+    "whippy",
+    "musinsa",
+    "worldcup",
+    "nextjs",
+    "react",
+    "tailwindcss",
+    "tanstack-query"
+  ]
 }
